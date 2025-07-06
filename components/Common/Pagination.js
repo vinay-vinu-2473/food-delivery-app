@@ -8,10 +8,12 @@ export default function Pagination({ currentPage, totalPages, pathname }) {
     <div className="flex justify-center mt-8">
       <nav className="flex items-center space-x-4">
         {prevPage ? (
-          <Link href={{ pathname, query: { page: prevPage } }}>
-            <a className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
+          <Link
+            href={{ pathname, query: { page: prevPage } }}
+            className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
+            
               Previous
-            </a>
+            
           </Link>
         ) : (
           <span className="px-3 py-1 border border-gray-300 rounded-md text-gray-400 cursor-not-allowed">
@@ -24,10 +26,12 @@ export default function Pagination({ currentPage, totalPages, pathname }) {
         </span>
 
         {nextPage ? (
-          <Link href={{ pathname, query: { page: nextPage } }}>
-            <a className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
+          <Link
+            href={{ pathname, query: { page: nextPage } }}
+            className="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50">
+            
               Next
-            </a>
+            
           </Link>
         ) : (
           <span className="px-3 py-1 border border-gray-300 rounded-md text-gray-400 cursor-not-allowed">

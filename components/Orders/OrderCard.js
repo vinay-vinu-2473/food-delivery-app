@@ -11,7 +11,7 @@ export default function OrderCard({ order }) {
   };
 
   return (
-    <Link href={`/orders/${order.id}`}>
+    <Link href={`/orders/${order.id}`} legacyBehavior>
       <div className="border rounded-lg p-4 hover:shadow-md transition cursor-pointer">
         <div className="flex justify-between items-start">
           <div>

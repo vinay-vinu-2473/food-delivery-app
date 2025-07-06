@@ -19,16 +19,17 @@ export default function AdminNav() {
             <div className="hidden md:block">
               <div className="flex items-baseline space-x-4">
                 {adminLinks.map((link) => (
-                  <Link key={link.name} href={link.href}>
-                    <a
-                      className={`px-3 py-2 rounded-md text-sm font-medium ${
-                        router.pathname === link.href
-                          ? 'bg-gray-900 text-white'
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                      }`}
-                    >
-                      {link.name}
-                    </a>
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={`px-3 py-2 rounded-md text-sm font-medium ${
+                      router.pathname === link.href
+                        ? 'bg-gray-900 text-white'
+                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                    }`}>
+
+                    {link.name}
+
                   </Link>
                 ))}
               </div>

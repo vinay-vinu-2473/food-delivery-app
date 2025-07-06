@@ -17,18 +17,18 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/menu">
-                  <a className="text-gray-300 hover:text-white">Menu</a>
+                <Link href="/menu" className="text-gray-300 hover:text-white">
+                  Menu
                 </Link>
               </li>
               <li>
-                <Link href="/about">
-                  <a className="text-gray-300 hover:text-white">About Us</a>
+                <Link href="/about" className="text-gray-300 hover:text-white">
+                  About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact">
-                  <a className="text-gray-300 hover:text-white">Contact</a>
+                <Link href="/contact" className="text-gray-300 hover:text-white">
+                  Contact
                 </Link>
               </li>
             </ul>
@@ -39,13 +39,13 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/privacy">
-                  <a className="text-gray-300 hover:text-white">Privacy Policy</a>
+                <Link href="/privacy" className="text-gray-300 hover:text-white">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms">
-                  <a className="text-gray-300 hover:text-white">Terms of Service</a>
+                <Link href="/terms" className="text-gray-300 hover:text-white">
+                  Terms of Service
                 </Link>
               </li>
             </ul>

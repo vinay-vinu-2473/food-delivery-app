@@ -8,7 +8,6 @@ export default function Home() {
       <Head>
         <title>FoodExpress - Delicious Food Delivered</title>
       </Head>
-      
       <section className="py-20 px-4 text-center bg-gradient-to-b from-orange-50 to-white">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold text-orange-600 mb-6">
@@ -18,16 +17,15 @@ export default function Home() {
             Order from your favorite restaurants with just a few clicks.
           </p>
           <div className="flex justify-center gap-4">
-            <Link href="/auth/login">
+            <Link href="/auth/login" legacyBehavior>
               <Button className="btn-primary">Login</Button>
             </Link>
-            <Link href="/auth/signup">
+            <Link href="/auth/signup" legacyBehavior>
               <Button className="btn-outline">Sign Up</Button>
             </Link>
           </div>
         </div>
       </section>
-
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Why Choose Us?</h2>

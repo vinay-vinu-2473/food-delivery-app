@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Robot Car Control Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --gray-light: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .connection-panel {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .connection-status i {
+            font-size: 18px;
+        }
+
+        .ip-display {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            color: var(--dark);
+            border: 2px solid var(--gray-light);
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Video Panel */
+        .video-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .video-container {
+            position: relative;
+            background: black;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            aspect-ratio: 16/9;
+        }
+
+        #videoFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .video-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Joystick Controls */
+        .joystick-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
+        }
+
+        .joystick-base {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            border-radius: 50%;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .joystick-handle {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: transform 0.1s;
+        }
+
+        .direction-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .dot {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--dark);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot:hover {
+            transform: scale(1.1);
+            background: var(--primary);
+            color: white;
+        }
+
+        .dot.forward { top: 20px; left: 50%; transform: translateX(-50%); }
+        .dot.backward { bottom: 20px; left: 50%; transform: translateX(-50%); }
+        .dot.left { left: 20px; top: 50%; transform: translateY(-50%); }
+        .dot.right { right: 20px; top: 50%; transform: translateY(-50%); }
+
+        /* Voice Control */
+        .voice-section {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .voice-visualizer {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            margin: 20px 0;
+        }
+
+        .voice-bar {
+            width: 6px;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: height 0.2s;
+        }
+
+        .voice-btn {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .voice-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+        }
+
+        .voice-btn.listening {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Speed Control */
+        .speed-control {
+            margin: 25px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .speed-slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary), #059669);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        .btn-light {
+            background: white;
+            color: var(--dark);
+            border: 2px solid var(--gray-light);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Status Panel */
+        .status-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray);
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Connection Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .modal h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .modal p {
+            color: var(--gray);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--gray-light);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 20px 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 350px;
+            z-index: 1001;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification-success {
+            border-left: 5px solid var(--secondary);
+        }
+
+        .notification-error {
+            border-left: 5px solid var(--danger);
+        }
+
+        .notification-info {
+            border-left: 5px solid var(--primary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .video-controls,
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .joystick-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .dot {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Connection Modal -->
+    <div id="connectionModal" class="modal-overlay" style="display: flex;">
+        <div class="modal">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 60px; color: var(--primary); margin-bottom: 10px;">🤖</div>
+                <h2>Connect to Robot</h2>
+                <p>Enter your Raspberry Pi's IP address to establish connection</p>
+            </div>
+            
+            <div class="input-group">
+                <label for="ipInput"><i class="fas fa-network-wired"></i> Robot IP Address</label>
+                <input type="text" id="ipInput" placeholder="e.g., 192.168.1.100" value="192.168.1.100">
+            </div>
+            
+            <div class="input-group">
+                <label for="portInput"><i class="fas fa-plug"></i> Port</label>
+                <input type="text" id="portInput" placeholder="e.g., 5000" value="5000">
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="connectToRobot()">
+                    <i class="fas fa-plug"></i> Connect
+                </button>
+                <button class="btn btn-light" onclick="useDefault()">
+                    <i class="fas fa-home"></i> Default
+                </button>
+            </div>
+            
+            <div style="margin-top: 25px; padding: 15px; background: #f0f9ff; border-radius: 10px;">
+                <p style="font-size: 13px; color: var(--gray); margin: 0;">
+                    <i class="fas fa-info-circle"></i> <strong>Tip:</strong> Run <code>hostname -I</code> on your Raspberry Pi to find its IP address
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Robot Car Control Dashboard</h1>
+                    <p>Real-time control and monitoring</p>
+                </div>
+            </div>
+            
+            <div class="connection-panel">
+                <div class="connection-status" id="connectionStatus">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Connecting...</span>
+                </div>
+                <div class="ip-display" id="ipDisplay">
+                    <i class="fas fa-server"></i>
+                    <span id="currentIP">Not connected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-grid">
+            <!-- Left Column: Video Feed -->
+            <div class="video-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-video"></i> Live Camera Feed
+                    </h2>
+                    <div class="video-overlay">
+                        <i class="fas fa-circle" style="color: var(--danger); font-size: 10px;"></i>
+                        LIVE
+                    </div>
+                </div>
+                
+                <div class="video-container">
+                    <img id="videoFeed" src="" alt="Live Camera Feed">
+                    <div id="videoPlaceholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; background: #1a1a1a; color: white; gap: 15px;">
+                        <i class="fas fa-video-slash" style="font-size: 60px; color: var(--gray);"></i>
+                        <p>Camera feed will appear after connection</p>
+                    </div>
+                </div>
+                
+                <div class="video-controls">
+                    <button class="btn btn-success" onclick="captureImage()">
+                        <i class="fas fa-camera"></i> Capture Image
+                    </button>
+                    <button class="btn btn-danger" id="recordBtn" onclick="startRecording()">
+                        <i class="fas fa-video"></i> Start Recording
+                    </button>
+                    <button class="btn btn-light" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand"></i> Fullscreen
+                    </button>
+                    <button class="btn btn-warning" onclick="trackRobot()">
+                        <i class="fas fa-map-marker-alt"></i> Track Robot
+                    </button>
+                </div>
+                
+                <div class="speed-control">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span><i class="fas fa-tachometer-alt"></i> Speed Control</span>
+                        <span id="speedValue">70%</span>
+                    </div>
+                    <input type="range" min="30" max="100" value="70" class="speed-slider" id="speedSlider" oninput="updateSpeed(this.value)">
+                </div>
+            </div>
+
+            <!-- Right Column: Controls -->
+            <div class="control-panel">
+                <h2 class="panel-title">
+                    <i class="fas fa-gamepad"></i> Robot Controls
+                </h2>
+                
+                <!-- Joystick Controls -->
+                <div class="joystick-container">
+                    <div class="joystick-base"></div>
+                    <div class="direction-dots">
+                        <div class="dot forward" onmousedown="moveRobot('forward')" onmouseup="stopRobot()" ontouchstart="moveRobot('forward')" ontouchend="stopRobot()">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="dot backward" onmousedown="moveRobot('backward')" onmouseup="stopRobot()" ontouchstart="moveRobot('backward')" ontouchend="stopRobot()">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="dot left" onmousedown="moveRobot('left')" onmouseup="stopRobot()" ontouchstart="moveRobot('left')" ontouchend="stopRobot()">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                        <div class="dot right" onmousedown="moveRobot('right')" onmouseup="stopRobot()" ontouchstart="moveRobot('right')" ontouchend="stopRobot()">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    <div class="joystick-handle" id="joystickHandle">
+                        <i class="fas fa-circle"></i>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onmousedown="moveRobot('forward')" onmouseup="stopRobot()">
+                        <i class="fas fa-arrow-up"></i> Forward
+                    </button>
+                    <button class="btn btn-light" onclick="stopRobot()">
+                        <i class="fas fa-stop"></i> Stop
+                    </button>
+                    <button class="btn btn-primary" onmousedown="moveRobot('backward')" onmouseup="stopRobot()">
+                        <i class="fas fa-arrow-down"></i> Backward
+                    </button>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onmousedown="moveRobot('left')" onmouseup="stopRobot()">
+                        <i class="fas fa-arrow-left"></i> Left
+                    </button>
+                    <button class="btn btn-light" onclick="centerRobot()">
+                        <i class="fas fa-home"></i> Center
+                    </button>
+                    <button class="btn btn-primary" onmousedown="moveRobot('right')" onmouseup="stopRobot()">
+                        <i class="fas fa-arrow-right"></i> Right
+                    </button>
+                </div>
+                
+                <!-- Voice Control -->
+                <div class="voice-section">
+                    <h3 style="margin-bottom: 15px; text-align: center;">
+                        <i class="fas fa-microphone"></i> Voice Control
+                    </h3>
+                    
+                    <div class="voice-visualizer" id="voiceVisualizer">
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                        <div class="voice-bar"></div>
+                    </div>
+                    
+                    <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceControl()">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    
+                    <p style="text-align: center; margin-top: 15px; color: var(--gray); font-size: 14px;">
+                        <i class="fas fa-info-circle"></i> Say: "forward", "backward", "left", "right", "stop"
+                    </p>
+                </div>
+                
+                <!-- Status Panel -->
+                <div class="status-panel">
+                    <h3 style="margin-bottom: 15px; font-size: 16px;">
+                        <i class="fas fa-chart-bar"></i> System Status
+                    </h3>
+                    
+                    <div class="status-item">
+                        <span class="status-label">
+                            <i class="fas fa-robot"></i>
+                            Robot Status
+                        </span>
+                        <span class="status-value" id="robotStatus">Disconnected</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <span class="status-label">
+                            <i class="fas fa-video"></i>
+                            Camera Status
+                        </span>
+                        <span class="status-value" id="cameraStatus">Offline</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <span class="status-label">
+                            <i class="fas fa-microphone"></i>
+                            Voice Control
+                        </span>
+                        <span class="status-value" id="voiceControlStatus">Ready</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <span class="status-label">
+                            <i class="fas fa-battery-full"></i>
+                            Battery Level
+                        </span>
+                        <span class="status-value" id="batteryLevel">--%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>🤖 Robot Car Control System | Made with <i class="fas fa-heart" style="color: #ef4444;"></i> for Raspberry Pi</p>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                Use arrow keys for movement | Space to stop | V for voice control
+            </p>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script>
+        // Global variables
+        let robotIP = '';
+        let robotPort = '5000';
+        let isConnected = false;
+        let isRecording = false;
+        let isListening = false;
+        let recognition = null;
+        let currentSpeed = 70;
+        let joystickActive = false;
+        
+        // DOM Elements
+        const connectionModal = document.getElementById('connectionModal');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const currentIP = document.getElementById('currentIP');
+        const videoFeed = document.getElementById('videoFeed');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        
+        // Initialize
+        function init() {
+            // Check for saved connection
+            const savedIP = localStorage.getItem('robotIP');
+            const savedPort = localStorage.getItem('robotPort');
+            
+            if (savedIP && savedPort) {
+                document.getElementById('ipInput').value = savedIP;
+                document.getElementById('portInput').value = savedPort;
+            }
+            
+            // Setup keyboard controls
+            setupKeyboardControls();
+            
+            // Setup joystick
+            setupJoystick();
+            
+            // Update voice visualizer
+            updateVoiceVisualizer();
+        }
+        
+        // Connect to robot
+        async function connectToRobot() {
+            robotIP = document.getElementById('ipInput').value.trim();
+            robotPort = document.getElementById('portInput').value.trim();
+            
+            if (!robotIP) {
+                showNotification('Please enter a valid IP address', 'error');
+                return;
+            }
+            
+            // Save connection info
+            localStorage.setItem('robotIP', robotIP);
+            localStorage.setItem('robotPort', robotPort);
+            
+            // Show connecting status
+            connectionStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+            connectionStatus.style.background = 'var(--warning)';
+            
+            try {
+                // Test connection
+                const response = await fetch(`http://${robotIP}:${robotPort}/`, {
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                });
+                
+                // If we get here, connection is successful
+                isConnected = true;
+                
+                // Update UI
+                connectionModal.style.display = 'none';
+                connectionStatus.innerHTML = '<i class="fas fa-check-circle"></i> Connected';
+                connectionStatus.style.background = 'var(--secondary)';
+                currentIP.textContent = `${robotIP}:${robotPort}`;
+                
+                // Update robot status
+                document.getElementById('robotStatus').textContent = 'Connected';
+                document.getElementById('robotStatus').style.color = 'var(--secondary)';
+                document.getElementById('cameraStatus').textContent = 'Online';
+                document.getElementById('cameraStatus').style.color = 'var(--secondary)';
+                
+                // Start video feed
+                videoFeed.src = `http://${robotIP}:${robotPort}/video_feed`;
+                videoPlaceholder.style.display = 'none';
+                
+                // Simulate battery level (in real app, get from robot)
+                updateBatteryLevel();
+                
+                showNotification('Successfully connected to robot!', 'success');
+                
+            } catch (error) {
+                connectionStatus.innerHTML = '<i class="fas fa-times-circle"></i> Connection Failed';
+                connectionStatus.style.background = 'var(--danger)';
+                showNotification('Failed to connect to robot. Check IP and try again.', 'error');
+            }
+        }
+        
+        // Use default connection
+        function useDefault() {
+            document.getElementById('ipInput').value = '192.168.1.100';
+            document.getElementById('portInput').value = '5000';
+        }
+        
+        // Setup keyboard controls
+        function setupKeyboardControls() {
+            document.addEventListener('keydown', (e) => {
+                if (!isConnected) return;
+                
+                switch(e.key.toLowerCase()) {
+                    case 'arrowup':
+                    case 'w':
+                        moveRobot('forward');
+                        break;
+                    case 'arrowdown':
+                    case 's':
+                        moveRobot('backward');
+                        break;
+                    case 'arrowleft':
+                    case 'a':
+                        moveRobot('left');
+                        break;
+                    case 'arrowright':
+                    case 'd':
+                        moveRobot('right');
+                        break;
+                    case ' ':
+                        stopRobot();
+                        break;
+                    case 'v':
+                        toggleVoiceControl();
+                        break;
+                    case 'f':
+                        toggleFullscreen();
+                        break;
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                if (!isConnected) return;
+                
+                if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].includes(e.key.toLowerCase())) {
+                    stopRobot();
+                }
+            });
+        }
+        
+        // Setup joystick controls
+        function setupJoystick() {
+            const joystick = document.getElementById('joystickHandle');
+            const container = document.querySelector('.joystick-container');
+            
+            let isDragging = false;
+            let startX, startY;
+            
+            joystick.addEventListener('mousedown', startDrag);
+            joystick.addEventListener('touchstart', startDrag);
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+            
+            function startDrag(e) {
+                if (!isConnected) return;
+                isDragging = true;
+                joystickActive = true;
+                const touch = e.touches ? e.touches[0] : e;
+                startX = touch.clientX;
+                startY = touch.clientY;
+                joystick.style.cursor = 'grabbing';
+            }
+            
+            function drag(e) {
+                if (!isDragging || !isConnected) return;
+                
+                e.preventDefault();
+                const touch = e.touches ? e.touches[0] : e;
+                const deltaX = touch.clientX - startX;
+                const deltaY = touch.clientY - startY;
+                
+                // Calculate angle and distance
+                const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+                const distance = Math.min(Math.sqrt(deltaX * deltaX + deltaY * deltaY), 100);
+                
+                // Update joystick position
+                const angleRad = angle * (Math.PI / 180);
+                const posX = Math.cos(angleRad) * Math.min(distance, 100);
+                const posY = Math.sin(angleRad) * Math.min(distance, 100);
+                
+                joystick.style.transform = `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px))`;
+                
+                // Determine direction based on angle
+                let direction = '';
+                if (distance > 20) { // Deadzone
+                    if (angle >= -45 && angle <= 45) {
+                        direction = 'right';
+                    } else if (angle > 45 && angle <= 135) {
+                        direction = 'forward';
+                    } else if (angle > 135 || angle <= -135) {
+                        direction = 'left';
+                    } else {
+                        direction = 'backward';
+                    }
+                    
+                    // Send movement command
+                    moveRobot(direction);
+                } else {
+                    stopRobot();
+                }
+            }
+            
+            function endDrag() {
+                if (!isDragging) return;
+                isDragging = false;
+                joystickActive = false;
+                joystick.style.transform = 'translate(-50%, -50%)';
+                joystick.style.cursor = 'grab';
+                stopRobot();
+            }
+        }
+        
+        // Move robot
+        async function moveRobot(direction) {
+            if (!isConnected) {
+                showNotification('Please connect to robot first', 'error');
+                return;
+            }
+            
+            try {
+                const speedAdjusted = (currentSpeed / 100).toFixed(2);
+                const response = await fetch(`http://${robotIP}:${robotPort}/${direction}?speed=${speedAdjusted}`);
+                
+                if (response.ok) {
+                    updateStatus(`Moving ${direction}`);
+                }
+            } catch (error) {
+                showNotification('Failed to send movement command', 'error');
+            }
+        }
+        
+        // Stop robot
+        async function stopRobot() {
+            if (!isConnected) return;
+            
+            try {
+                await fetch(`http://${robotIP}:${robotPort}/stop`);
+                updateStatus('Robot stopped');
+            } catch (error) {
+                console.error('Stop error:', error);
+            }
+        }
+        
+        // Center robot (custom function)
+        function centerRobot() {
+            if (!isConnected) return;
+            updateStatus('Robot centered');
+            showNotification('Robot centered', 'info');
+        }
+        
+        // Update speed
+        function updateSpeed(value) {
+            currentSpeed = value;
+            document.getElementById('speedValue').textContent = `${value}%`;
+        }
+        
+        // Voice control
+        function toggleVoiceControl() {
+            if (!isConnected) {
+                showNotification('Please connect to robot first', 'error');
+                return;
+            }
+            
+            if (!isListening) {
+                startVoiceControl();
+            } else {
+                stopVoiceControl();
+            }
+        }
+        
+        function startVoiceControl() {
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                showNotification('Voice recognition not supported in this browser', 'error');
+                return;
+            }
+            
+            isListening = true;
+            document.getElementById('voiceBtn').classList.add('listening');
+            document.getElementById('voiceControlStatus').textContent = 'Listening';
+            document.getElementById('voiceControlStatus').style.color = 'var(--danger)';
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = function() {
+                console.log('Voice recognition started');
+            };
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript.toLowerCase().trim();
+                processVoiceCommand(transcript);
+            };
+            
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                stopVoiceControl();
+                
+                if (event.error === 'not-allowed') {
+                    showNotification('Microphone access denied. Please allow microphone permission.', 'error');
+                }
+            };
+            
+            recognition.onend = function() {
+                if (isListening) {
+                    // Restart recognition if still listening
+                    setTimeout(() => recognition.start(), 100);
+                }
+            };
+            
+            try {
+                recognition.start();
+                showNotification('Listening for voice commands...', 'info');
+            } catch (error) {
+                console.error('Failed to start recognition:', error);
+                stopVoiceControl();
+            }
+        }
+        
+        function stopVoiceControl() {
+            isListening = false;
+            if (recognition) {
+                recognition.stop();
+            }
+            document.getElementById('voiceBtn').classList.remove('listening');
+            document.getElementById('voiceControlStatus').textContent = 'Ready';
+            document.getElementById('voiceControlStatus').style.color = 'var(--secondary)';
+        }
+        
+        function processVoiceCommand(command) {
+            console.log('Voice command:', command);
+            
+            let action = '';
+            
+            if (command.includes('forward') || command.includes('go forward') || command.includes('move forward')) {
+                moveRobot('forward');
+                action = 'Moving forward';
+            } else if (command.includes('backward') || command.includes('back') || command.includes('reverse')) {
+                moveRobot('backward');
+                action = 'Moving backward';
+            } else if (command.includes('left') || command.includes('turn left')) {
+                moveRobot('left');
+                action = 'Turning left';
+            } else if (command.includes('right') || command.includes('turn right')) {
+                moveRobot('right');
+                action = 'Turning right';
+            } else if (command.includes('stop') || command.includes('halt')) {
+                stopRobot();
+                action = 'Stopping';
+            } else if (command.includes('faster')) {
+                const newSpeed = Math.min(currentSpeed + 20, 100);
+                updateSpeed(newSpeed);
+                action = 'Increasing speed';
+            } else if (command.includes('slower')) {
+                const newSpeed = Math.max(currentSpeed - 20, 30);
+                updateSpeed(newSpeed);
+                action = 'Decreasing speed';
+            } else {
+                action = `Command not recognized: "${command}"`;
+                showNotification(action, 'error');
+                return;
+            }
+            
+            showNotification(`Voice command: ${action}`);
+            updateStatus(action);
+        }
+        
+        // Camera functions
+        async function captureImage() {
+            if (!isConnected) {
+                showNotification('Please connect to robot first', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://${robotIP}:${robotPort}/capture`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Image captured successfully!', 'success');
+                } else {
+                    showNotification('Failed to capture image', 'error');
+                }
+            } catch (error) {
+                showNotification('Error capturing image', 'error');
+            }
+        }
+        
+        async function startRecording() {
+            if (!isConnected) {
+                showNotification('Please connect to robot first', 'error');
+                return;
+            }
+            
+            if (isRecording) return;
+            
+            try {
+                const response = await fetch(`http://${robotIP}:${robotPort}/start_recording`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    isRecording = true;
+                    document.getElementById('recordBtn').innerHTML = '<i class="fas fa-stop-circle"></i> Stop Recording';
+                    document.getElementById('recordBtn').classList.remove('btn-danger');
+                    document.getElementById('recordBtn').classList.add('btn-warning');
+                    showNotification('Recording started', 'success');
+                }
+            } catch (error) {
+                showNotification('Error starting recording', 'error');
+            }
+        }
+        
+        function stopRecording() {
+            if (!isRecording) return;
+            
+            fetch(`http://${robotIP}:${robotPort}/stop_recording`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        isRecording = false;
+                        document.getElementById('recordBtn').innerHTML = '<i class="fas fa-video"></i> Start Recording';
+                        document.getElementById('recordBtn').classList.remove('btn-warning');
+                        document.getElementById('recordBtn').classList.add('btn-danger');
+                        showNotification('Recording saved', 'success');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Error stopping recording', 'error');
+                });
+        }
+        
+        // Track robot location
+        function trackRobot() {
+            // This would integrate with GPS in a real system
+            const lat = 12.9296;
+            const lng = 77.6225;
+            const url = `https://www.google.com/maps?q=${lat},${lng}`;
+            window.open(url, '_blank');
+            showNotification('Opening robot location in Google Maps', 'info');
+        }
+        
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            const videoContainer = document.querySelector('.video-container');
+            
+            if (!document.fullscreenElement) {
+                videoContainer.requestFullscreen().catch(err => {
+                    showNotification(`Error attempting to enable fullscreen: ${err.message}`, 'error');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        // Update battery level (simulated)
+        function updateBatteryLevel() {
+            const levels = [100, 90, 80, 75, 70, 65, 60];
+            const randomLevel = levels[Math.floor(Math.random() * levels.length)];
+            const batteryElement = document.getElementById('batteryLevel');
+            
+            batteryElement.textContent = `${randomLevel}%`;
+            
+            if (randomLevel > 70) {
+                batteryElement.style.color = 'var(--secondary)';
+            } else if (randomLevel > 40) {
+                batteryElement.style.color = 'var(--warning)';
+            } else {
+                batteryElement.style.color = 'var(--danger)';
+            }
+            
+            // Update battery level periodically
+            setTimeout(updateBatteryLevel, 30000);
+        }
+        
+        // Update voice visualizer
+        function updateVoiceVisualizer() {
+            const bars = document.querySelectorAll('.voice-bar');
+            
+            if (isListening) {
+                bars.forEach((bar, index) => {
+                    const height = 5 + Math.random() * 35;
+                    bar.style.height = `${height}px`;
+                    bar.style.background = `linear-gradient(to top, var(--danger), #ef4444)`;
+                    
+                    // Random animation delay for each bar
+                    setTimeout(() => {
+                        bar.style.transition = 'height 0.3s ease';
+                    }, index * 50);
+                });
+            } else {
+                bars.forEach(bar => {
+                    bar.style.height = '5px';
+                    bar.style.background = 'var(--primary)';
+                });
+            }
+            
+            // Continue animation
+            if (isListening) {
+                requestAnimationFrame(updateVoiceVisualizer);
+            }
+        }
+        
+        // Update status message
+        function updateStatus(message) {
+            document.getElementById('robotStatus').textContent = message;
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-size: 20px;">
+                        ${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">
+                            ${type === 'success' ? 'Success' : type === 'error' ? 'Error' : 'Info'}
+                        </div>
+                        <div style="font-size: 14px; color: var(--gray);">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            // Remove notification after 4 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+        
+        // Initialize the application
+        window.onload = init;
+    </script>
+</body>
+</html>
